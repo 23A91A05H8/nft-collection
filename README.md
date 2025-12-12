@@ -1,1 +1,1 @@
-# nft-collection
+# NFT Collection Project
