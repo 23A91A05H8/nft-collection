@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// Basic skeleton for your NFT Collection Contract
-// In later steps you will fill in logic for minting, transfers, approvals, etc.
-
 contract NFTCollection {
     // ---------------------------------------------------------
     // State Variables
@@ -11,14 +8,36 @@ contract NFTCollection {
     
     string public name;         // Token name
     string public symbol;       // Token symbol
-    uint256 public maxSupply;   // Maximum number of NFTs that can ever be minted
-    uint256 public totalSupply; // Current number of minted NFTs
+    uint256 public maxSupply;   // Maximum number of NFTs allowed
+    uint256 public totalSupply; // Minted NFTs count
 
     // Mappings
-    mapping(uint256 => address) public ownerOf;          // tokenId => owner
-    mapping(address => uint256) public balanceOf;        // owner => balance
-    mapping(uint256 => address) public tokenApprovals;   // tokenId => approved address
-    mapping(address => mapping(address => bool)) public isApprovedForAll; // owner => operator approvals
+    mapping(uint256 => address) public ownerOf;               // tokenId → owner
+    mapping(address => uint256) public balanceOf;             // owner → balance
+    mapping(uint256 => address) public tokenApprovals;        // tokenId → approved address
+    mapping(address => mapping(address => bool)) public isApprovedForAll; // owner → operator approvals
+
+
+    // ---------------------------------------------------------
+    // Step 3: Access Control + Pause State
+    // ---------------------------------------------------------
+
+    address private _admin;   // Contract admin/owner
+    bool public paused = false; // Pause minting state
+
+    modifier onlyAdmin() {
+        require(msg.sender == _admin, "Only admin can perform this action");
+        _;
+    }
+
+    function pauseMinting() public onlyAdmin {
+        paused = true;
+    }
+
+    function unpauseMinting() public onlyAdmin {
+        paused = false;
+    }
+
 
     // ---------------------------------------------------------
     // Constructor
@@ -33,15 +52,20 @@ contract NFTCollection {
         symbol = _symbol;
         maxSupply = _maxSupply;
 
+        // Set deployer as admin
+        _admin = msg.sender;
+
         // totalSupply starts at 0
     }
 
+
     // ---------------------------------------------------------
-    // Function Placeholders (You will fill these in Step 3)
+    // Function Placeholders (filled in future steps)
     // ---------------------------------------------------------
 
     function mint(address to) public {
-        // TODO: Implement safe mint
+        require(!paused, "Minting is paused");
+        // TODO: Implement safe mint logic in next step
     }
 
     function transferFrom(address from, address to, uint256 tokenId) public {
@@ -66,9 +90,9 @@ contract NFTCollection {
         return false;
     }
 
-    // Optional: metadata
+    // Optional metadata
     function tokenURI(uint256 tokenId) public view returns (string memory) {
-        // TODO: Return metadata URI
+        // TODO: return metadata URI
         return "";
     }
-}
+}  
