@@ -22,6 +22,44 @@ contract NFTCollection {
     // Step 3: Access Control + Pause State
     // ---------------------------------------------------------
 
+  // ---------------------------------------------------------
+    // Metadata / Token URI 
+    // ---------------------------------------------------------
+
+    string private baseURI;
+
+    // Admin function to set metadata base URI
+    function setBaseURI(string memory _baseURI) public onlyAdmin {
+        baseURI = _baseURI;
+    }
+
+    // Return metadata URL for each token
+    function tokenURI(uint256 tokenId) public view returns (string memory) {
+        require(ownerOf[tokenId] != address(0), "Token does not exist");
+
+        // Convert tokenId to string
+        return string(abi.encodePacked(baseURI, _toString(tokenId)));
+    }
+
+    // Helper function to convert uint256 -> string
+    function _toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
+    }
     address private _admin;   // Contract admin/owner
     bool public paused = false; // Pause minting state
 
